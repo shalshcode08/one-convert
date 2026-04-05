@@ -1,0 +1,15 @@
+{
+  "name": "@one-convert/app-mobile",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Capacitor mobile app — not yet implemented",
+  "dependencies": {
+    "@one-convert/core": "workspace:*",
+    "@one-convert/types": "workspace:*",
+    "@one-convert/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/cli": "^6.0.0"
+  }
+}

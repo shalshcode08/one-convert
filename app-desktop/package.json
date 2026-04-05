@@ -1,0 +1,14 @@
+{
+  "name": "@one-convert/app-desktop",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Electron desktop app — not yet implemented",
+  "dependencies": {
+    "@one-convert/core": "workspace:*",
+    "@one-convert/types": "workspace:*",
+    "@one-convert/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  }
+}
