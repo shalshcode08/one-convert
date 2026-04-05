@@ -10,13 +10,18 @@ import { convertToSvg } from "./converters/svg";
  * Routes a file to the correct converter based on the target format.
  * Returns a typed Result — never throws.
  */
-export async function convert(file: File, targetFormat: OutputFormat): Promise<Result<Blob>> {
+export async function convert(
+  file: File,
+  targetFormat: OutputFormat,
+  quality = 0.92,
+): Promise<Result<Blob>> {
   try {
     switch (targetFormat) {
       case "png":
       case "jpg":
       case "webp":
-        return await convertRaster(file, targetFormat);
+      case "avif":
+        return await convertRaster(file, targetFormat, quality);
       case "svg":
         return await convertToSvg(file);
       case "gif":
@@ -31,6 +36,10 @@ export async function convert(file: File, targetFormat: OutputFormat): Promise<R
       }
     }
   } catch (cause) {
-    return err({ code: "UNKNOWN", message: "Unexpected error during conversion", cause });
+    return err({
+      code: "UNKNOWN",
+      message: "Unexpected error during conversion",
+      cause,
+    });
   }
 }

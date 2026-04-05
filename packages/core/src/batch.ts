@@ -18,14 +18,19 @@ export type OnProgress = (event: BatchProgressEvent) => void;
 export async function processBatch(
   jobs: readonly ConversionJob[],
   onProgress: OnProgress,
+  quality = 0.92,
 ): Promise<void> {
   await Promise.allSettled(
     jobs.map(async (job) => {
       let result: Result<Blob>;
       try {
-        result = await convert(job.file, job.targetFormat);
+        result = await convert(job.file, job.targetFormat, quality);
       } catch (cause) {
-        result = err({ code: "UNKNOWN", message: "Unexpected batch error", cause });
+        result = err({
+          code: "UNKNOWN",
+          message: "Unexpected batch error",
+          cause,
+        });
       }
       onProgress({ jobId: job.id, result });
     }),

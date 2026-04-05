@@ -4,14 +4,18 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
+type JobRecord = Record<JobId, ConversionJob>;
+
 interface ConverterState {
-  jobs: Map<JobId, ConversionJob>;
+  jobs: JobRecord;
   order: JobId[];
   globalFormat: OutputFormat;
+  quality: number; // 0–1, only applies to jpg/webp
 }
 
 interface ConverterActions {
   setGlobalFormat: (format: OutputFormat) => void;
+  setQuality: (quality: number) => void;
   addFiles: (files: readonly File[]) => void;
   updateJob: (id: JobId, patch: Partial<ConversionJob>) => void;
   removeJob: (id: JobId) => void;
@@ -24,15 +28,26 @@ export type ConverterStore = ConverterState & ConverterActions;
 export const useConverterStore = create<ConverterStore>()(
   devtools(
     immer((set) => ({
-      // State
-      jobs: new Map(),
+      jobs: {} as JobRecord,
       order: [],
       globalFormat: "png" satisfies OutputFormat,
+      quality: 0.92,
 
-      // Actions
       setGlobalFormat: (format) => {
         set((state) => {
           state.globalFormat = format;
+          for (const id of state.order) {
+            const job = state.jobs[id];
+            if (job && job.status === "pending") {
+              state.jobs[id] = { ...job, targetFormat: format };
+            }
+          }
+        });
+      },
+
+      setQuality: (quality) => {
+        set((state) => {
+          state.quality = quality;
         });
       },
 
@@ -40,7 +55,7 @@ export const useConverterStore = create<ConverterStore>()(
         set((state) => {
           for (const file of files) {
             const id = createJobId();
-            const job: ConversionJob = {
+            state.jobs[id] = {
               id,
               file,
               targetFormat: state.globalFormat,
@@ -52,7 +67,6 @@ export const useConverterStore = create<ConverterStore>()(
               createdAt: Date.now(),
               completedAt: null,
             };
-            state.jobs.set(id, job);
             state.order.push(id);
           }
         });
@@ -60,34 +74,34 @@ export const useConverterStore = create<ConverterStore>()(
 
       updateJob: (id, patch) => {
         set((state) => {
-          const job = state.jobs.get(id);
+          const job = state.jobs[id];
           if (job) {
-            state.jobs.set(id, { ...job, ...patch });
+            state.jobs[id] = { ...job, ...patch };
           }
         });
       },
 
       removeJob: (id) => {
         set((state) => {
-          state.jobs.delete(id);
+          delete state.jobs[id];
           state.order = state.order.filter((jid) => jid !== id);
         });
       },
 
       clearAll: () => {
         set((state) => {
-          state.jobs.clear();
+          state.jobs = {} as JobRecord;
           state.order = [];
         });
       },
 
       clearCompleted: () => {
         set((state) => {
-          const toRemove = Array.from(state.jobs.values())
+          const toRemove = Object.values(state.jobs)
             .filter((j) => j.status === "done" || j.status === "error")
             .map((j) => j.id);
           for (const id of toRemove) {
-            state.jobs.delete(id);
+            delete state.jobs[id];
           }
           state.order = state.order.filter((id) => !toRemove.includes(id));
         });

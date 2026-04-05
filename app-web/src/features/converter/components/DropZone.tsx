@@ -1,5 +1,5 @@
 import { cn } from "@one-convert/ui";
-import { UploadCloud } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 
 interface DropZoneProps {
@@ -39,8 +39,10 @@ export function DropZone({ onFiles, disabled = false }: DropZoneProps) {
     setIsDragging(true);
   }, []);
 
-  const handleDragLeave = useCallback(() => {
-    setIsDragging(false);
+  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragging(false);
+    }
   }, []);
 
   const handleInputChange = useCallback(
@@ -48,10 +50,23 @@ export function DropZone({ onFiles, disabled = false }: DropZoneProps) {
       if (!e.target.files) return;
       const files = filterImageFiles(e.target.files);
       if (files.length > 0) onFiles(files);
-      // Reset input so same files can be re-added
       e.target.value = "";
     },
     [onFiles],
+  );
+
+  const handleClick = useCallback(() => {
+    if (!disabled) inputRef.current?.click();
+  }, [disabled]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if ((e.key === "Enter" || e.key === " ") && !disabled) {
+        e.preventDefault();
+        inputRef.current?.click();
+      }
+    },
+    [disabled],
   );
 
   return (
@@ -60,42 +75,58 @@ export function DropZone({ onFiles, disabled = false }: DropZoneProps) {
       tabIndex={disabled ? -1 : 0}
       aria-label="Drop images here or click to browse"
       aria-disabled={disabled}
-      onClick={() => !disabled && inputRef.current?.click()}
-      onKeyDown={(e) => {
-        if ((e.key === "Enter" || e.key === " ") && !disabled) inputRef.current?.click();
-      }}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={cn(
-        "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-8 py-14 transition-colors select-none",
+        "group relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-8 py-12 text-center select-none transition-all duration-150",
         isDragging
-          ? "border-foreground bg-muted"
-          : "border-border hover:border-foreground/40 hover:bg-muted/50",
-        disabled && "cursor-not-allowed opacity-50",
+          ? "scale-[1.01] border-[var(--color-foreground)] bg-[var(--color-muted)]"
+          : "border-[var(--color-border)] hover:border-[var(--color-foreground)]/30 hover:bg-[var(--color-muted)]/60",
+        disabled && "pointer-events-none opacity-40",
       )}
     >
-      <UploadCloud
+      <div
         className={cn(
-          "h-8 w-8 transition-colors",
-          isDragging ? "text-foreground" : "text-muted-foreground",
+          "flex h-10 w-10 items-center justify-center rounded-lg border transition-all duration-150",
+          isDragging
+            ? "border-[var(--color-foreground)]/20 bg-[var(--color-foreground)] text-[var(--color-background)]"
+            : "border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-muted-foreground)] group-hover:border-[var(--color-foreground)]/20",
         )}
-        strokeWidth={1.5}
-      />
-      <div className="text-center">
-        <p className="text-sm font-medium text-foreground">
-          {isDragging ? "Release to add files" : "Drop images here"}
+      >
+        <Upload className="h-4 w-4" strokeWidth={1.5} />
+      </div>
+
+      <div className="space-y-1">
+        <p
+          className="text-sm font-medium"
+          style={{ color: "var(--color-foreground)" }}
+        >
+          {isDragging ? "Drop to add" : "Drop images here"}
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          or click to browse &middot; PNG, JPG, WebP, GIF, SVG
+        <p
+          className="text-xs"
+          style={{ color: "var(--color-muted-foreground)" }}
+        >
+          or{" "}
+          <span
+            className="underline underline-offset-2"
+            style={{ color: "var(--color-foreground)" }}
+          >
+            browse files
+          </span>{" "}
+          · PNG, JPG, WebP, GIF, SVG
         </p>
       </div>
+
       <input
         ref={inputRef}
         type="file"
         accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
         multiple
-        className="hidden"
+        className="sr-only"
         onChange={handleInputChange}
         disabled={disabled}
       />

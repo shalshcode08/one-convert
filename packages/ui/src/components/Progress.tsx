@@ -3,8 +3,9 @@ import * as React from "react";
 
 import { cn } from "../lib/utils";
 
-export interface ProgressProps
-  extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
+export interface ProgressProps extends React.ComponentPropsWithoutRef<
+  typeof ProgressPrimitive.Root
+> {
   readonly value?: number;
 }
 
@@ -14,11 +15,14 @@ const Progress = React.forwardRef<
 >(({ className, value, ...props }, ref) => (
   <ProgressPrimitive.Root
     ref={ref}
-    className={cn("relative h-1.5 w-full overflow-hidden rounded-full bg-muted", className)}
+    className={cn(
+      "relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-muted)]",
+      className,
+    )}
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className="h-full w-full flex-1 bg-primary transition-all duration-300"
+      className="h-full w-full flex-1 bg-[var(--color-primary)] transition-all duration-300"
       style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
     />
   </ProgressPrimitive.Root>

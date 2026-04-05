@@ -1,0 +1,17 @@
+{
+  "name": "oneconvert",
+  "short_name": "oneconvert",
+  "description": "Convert images locally — nothing leaves your browser.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

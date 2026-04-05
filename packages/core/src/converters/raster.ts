@@ -1,10 +1,12 @@
 import type { OutputFormat, Result } from "@one-convert/types";
 import { FORMAT_MIME, err, ok } from "@one-convert/types";
 
-const RASTER_FORMATS = ["png", "jpg", "webp"] as const;
+const RASTER_FORMATS = ["png", "jpg", "webp", "avif"] as const;
 type RasterOutputFormat = (typeof RASTER_FORMATS)[number];
 
-function isRasterOutputFormat(format: OutputFormat): format is RasterOutputFormat {
+function isRasterOutputFormat(
+  format: OutputFormat,
+): format is RasterOutputFormat {
   return RASTER_FORMATS.includes(format as RasterOutputFormat);
 }
 
@@ -41,6 +43,7 @@ function canvasToBlob(
 export async function convertRaster(
   file: File,
   targetFormat: OutputFormat,
+  quality = 0.92,
 ): Promise<Result<Blob>> {
   if (!isRasterOutputFormat(targetFormat)) {
     return err({
@@ -53,7 +56,11 @@ export async function convertRaster(
   try {
     img = await loadImageFromFile(file);
   } catch (cause) {
-    return err({ code: "INVALID_FILE", message: "Could not load image file", cause });
+    return err({
+      code: "INVALID_FILE",
+      message: "Could not load image file",
+      cause,
+    });
   }
 
   const canvas = document.createElement("canvas");
@@ -62,7 +69,10 @@ export async function convertRaster(
 
   const ctx = canvas.getContext("2d");
   if (!ctx) {
-    return err({ code: "CANVAS_UNAVAILABLE", message: "CanvasRenderingContext2D unavailable" });
+    return err({
+      code: "CANVAS_UNAVAILABLE",
+      message: "CanvasRenderingContext2D unavailable",
+    });
   }
 
   // For JPG: fill white background (JPG has no alpha channel)
@@ -74,10 +84,18 @@ export async function convertRaster(
   ctx.drawImage(img, 0, 0);
 
   const mimeType = FORMAT_MIME[targetFormat];
-  const blob = await canvasToBlob(canvas, mimeType);
+  // Quality only applies to lossy formats; PNG ignores it
+  const q =
+    targetFormat === "jpg" || targetFormat === "webp" || targetFormat === "avif"
+      ? quality
+      : undefined;
+  const blob = await canvasToBlob(canvas, mimeType, q);
 
   if (!blob) {
-    return err({ code: "CANVAS_UNAVAILABLE", message: "canvas.toBlob returned null" });
+    return err({
+      code: "CANVAS_UNAVAILABLE",
+      message: "canvas.toBlob returned null",
+    });
   }
 
   return ok(blob);
