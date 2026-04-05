@@ -1,16 +1,13 @@
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
-import importPlugin from "eslint-plugin-import";
-import reactPlugin from "eslint-plugin-react";
-import reactHooksPlugin from "eslint-plugin-react-hooks";
 import prettierConfig from "eslint-config-prettier";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
 
 /** @type {import("eslint").Linter.FlatConfig[]} */
 export const baseConfig = [
   {
     plugins: {
       "@typescript-eslint": tseslint,
-      import: importPlugin,
     },
     languageOptions: {
       parser: tsParser,
@@ -31,22 +28,6 @@ export const baseConfig = [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
-      "import/order": [
-        "error",
-        {
-          groups: [
-            "builtin",
-            "external",
-            "internal",
-            "parent",
-            "sibling",
-            "index",
-            "type",
-          ],
-          "newlines-between": "always",
-          alphabetize: { order: "asc", caseInsensitive: true },
-        },
-      ],
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },
@@ -58,17 +39,15 @@ export const reactConfig = [
   ...baseConfig,
   {
     plugins: {
-      react: reactPlugin,
       "react-hooks": reactHooksPlugin,
     },
-    settings: {
-      react: { version: "detect" },
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
     },
     rules: {
-      ...reactPlugin.configs.recommended.rules,
-      ...reactHooksPlugin.configs.recommended.rules,
-      "react/react-in-jsx-scope": "off",
-      "react/prop-types": "off",
+      "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "error",
     },
   },

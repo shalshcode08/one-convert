@@ -1,0 +1,60 @@
+version: 2
+
+updates:
+  # Root workspace & all packages
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 10
+    groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      radix-ui:
+        patterns:
+          - "@radix-ui/*"
+      typescript-eslint:
+        patterns:
+          - "@typescript-eslint/*"
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+          - "prettier-plugin-tailwindcss"
+      vite:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+      zustand:
+        patterns:
+          - "zustand"
+          - "immer"
+      turbo:
+        patterns:
+          - "turbo"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "chore(ci)"

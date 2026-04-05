@@ -1,7 +1,10 @@
 import "@one-convert/ui/globals.css";
 
+import { enableMapSet } from "immer";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+
+enableMapSet();
 
 import { App } from "./App";
 
