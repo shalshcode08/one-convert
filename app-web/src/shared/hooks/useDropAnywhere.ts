@@ -6,7 +6,15 @@ const ACCEPTED_MIME = new Set([
   "image/webp",
   "image/gif",
   "image/svg+xml",
+  "image/heic",
+  "image/heif",
 ]);
+
+function isAccepted(file: File): boolean {
+  if (ACCEPTED_MIME.has(file.type)) return true;
+  const name = file.name.toLowerCase();
+  return name.endsWith(".heic") || name.endsWith(".heif");
+}
 
 export function useDropAnywhere(onFiles: (files: readonly File[]) => void) {
   const [isDraggingOver, setIsDraggingOver] = useState(false);
@@ -29,9 +37,7 @@ export function useDropAnywhere(onFiles: (files: readonly File[]) => void) {
     (e: DragEvent) => {
       e.preventDefault();
       setIsDraggingOver(false);
-      const files = Array.from(e.dataTransfer?.files ?? []).filter((f) =>
-        ACCEPTED_MIME.has(f.type),
-      );
+      const files = Array.from(e.dataTransfer?.files ?? []).filter(isAccepted);
       if (files.length > 0) onFiles(files);
     },
     [onFiles],

@@ -15,12 +15,13 @@
     "@one-convert/core": "workspace:*",
     "@one-convert/types": "workspace:*",
     "@one-convert/ui": "workspace:*",
+    "gif.js": "^0.2.0",
+    "heic2any": "^0.0.4",
+    "lucide-react": "^0.468.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "zustand": "^5.0.2",
     "zod": "^3.23.8",
-    "lucide-react": "^0.468.0",
-    "gif.js": "^0.2.0"
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@one-convert/eslint-config": "workspace:*",

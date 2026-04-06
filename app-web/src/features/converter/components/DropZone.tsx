@@ -13,10 +13,19 @@ const ACCEPTED_MIME = new Set([
   "image/webp",
   "image/gif",
   "image/svg+xml",
+  "image/heic",
+  "image/heif",
 ]);
 
+// Also accept files by extension as fallback since some OS might not resolve heic mime types correctly
+function isAccepted(file: File): boolean {
+  if (ACCEPTED_MIME.has(file.type)) return true;
+  const name = file.name.toLowerCase();
+  return name.endsWith(".heic") || name.endsWith(".heif");
+}
+
 function filterImageFiles(fileList: FileList): readonly File[] {
-  return Array.from(fileList).filter((f) => ACCEPTED_MIME.has(f.type));
+  return Array.from(fileList).filter(isAccepted);
 }
 
 export function DropZone({ onFiles, disabled = false }: DropZoneProps) {
@@ -117,14 +126,14 @@ export function DropZone({ onFiles, disabled = false }: DropZoneProps) {
           >
             browse files
           </span>{" "}
-          · PNG, JPG, WebP, GIF, SVG
+          · PNG, JPG, WebP, GIF, SVG, HEIC
         </p>
       </div>
 
       <input
         ref={inputRef}
         type="file"
-        accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+        accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml,image/heic,image/heif,.heic,.heif"
         multiple
         className="sr-only"
         onChange={handleInputChange}

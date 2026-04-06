@@ -21,6 +21,7 @@ export const INPUT_FORMATS = [
   "avif",
   "gif",
   "svg",
+  "heic",
 ] as const;
 
 export type InputFormat = (typeof INPUT_FORMATS)[number];
