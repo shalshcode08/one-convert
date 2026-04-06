@@ -11,7 +11,7 @@ interface ImageTracerStatic {
 
 // Dynamic import so bundlers can code-split the heavy tracer library
 async function getTracer(): Promise<ImageTracerStatic> {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  // @ts-expect-error imagetracerjs does not have types
   const mod = await import("imagetracerjs");
   return (mod.default ?? mod) as ImageTracerStatic;
 }
@@ -53,14 +53,22 @@ export async function convertToSvg(file: File): Promise<Result<Blob>> {
   try {
     imageData = await loadImageData(file);
   } catch (cause) {
-    return err({ code: "INVALID_FILE", message: "Could not load image for SVG tracing", cause });
+    return err({
+      code: "INVALID_FILE",
+      message: "Could not load image for SVG tracing",
+      cause,
+    });
   }
 
   let tracer: ImageTracerStatic;
   try {
     tracer = await getTracer();
   } catch (cause) {
-    return err({ code: "SVG_TRACE_FAILED", message: "Failed to load SVG tracer library", cause });
+    return err({
+      code: "SVG_TRACE_FAILED",
+      message: "Failed to load SVG tracer library",
+      cause,
+    });
   }
 
   let svgString: string;
@@ -71,7 +79,11 @@ export async function convertToSvg(file: File): Promise<Result<Blob>> {
       mincolorratio: 0,
     });
   } catch (cause) {
-    return err({ code: "SVG_TRACE_FAILED", message: "SVG tracing failed", cause });
+    return err({
+      code: "SVG_TRACE_FAILED",
+      message: "SVG tracing failed",
+      cause,
+    });
   }
 
   const blob = new Blob([svgString], { type: "image/svg+xml" });

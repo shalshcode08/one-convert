@@ -25,7 +25,7 @@ interface GIFConstructor {
 
 async function getGIFEncoder(): Promise<GIFConstructor> {
   const mod = await import("gif.js");
-  return (mod.default ?? mod) as GIFConstructor;
+  return (mod.default ?? mod) as unknown as GIFConstructor;
 }
 
 function loadImageElement(file: File): Promise<HTMLImageElement> {
