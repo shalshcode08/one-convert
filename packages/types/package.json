@@ -10,7 +10,9 @@
     }
   },
   "main": "./src/index.ts",
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "devDependencies": {
     "@one-convert/tsconfig": "workspace:*"
   }

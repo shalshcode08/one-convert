@@ -11,7 +11,9 @@
     "./globals.css": "./src/globals.css"
   },
   "main": "./src/index.ts",
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "dependencies": {
     "@one-convert/types": "workspace:*",
     "@radix-ui/react-progress": "^1.1.1",

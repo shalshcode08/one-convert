@@ -15,7 +15,9 @@ export interface BatchSummary {
   readonly running: number;
 }
 
-export function computeBatchSummary(jobs: ReadonlyMap<JobId, ConversionJob>): BatchSummary {
+export function computeBatchSummary(
+  jobs: ReadonlyMap<JobId, ConversionJob>,
+): BatchSummary {
   let done = 0;
   let failed = 0;
   let pending = 0;
