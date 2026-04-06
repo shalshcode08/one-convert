@@ -15,6 +15,7 @@
     "@one-convert/core": "workspace:*",
     "@one-convert/types": "workspace:*",
     "@one-convert/ui": "workspace:*",
+    "@vercel/analytics": "^2.0.1",
     "gif.js": "^0.2.0",
     "heic2any": "^0.0.4",
     "lucide-react": "^0.468.0",
